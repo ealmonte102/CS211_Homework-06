@@ -3,7 +3,6 @@
 //  main.cpp
 
 #include "Roster.hpp"
-#include "Student.hpp"
 #include <cstdlib>
 #include <ctime>
 #include <iostream>

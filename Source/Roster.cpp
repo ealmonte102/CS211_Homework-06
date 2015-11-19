@@ -1,7 +1,7 @@
 // Roster.cpp
 // Created by Evan Almonte on 10/18/2015.
 //
-#include "Roster.hpp"
+	#include "Roster.hpp"
 #include "Student.hpp"
 #include "Utilities.hpp"
 #include <cstdlib>
@@ -84,8 +84,8 @@ int Roster::getNumOfCredits( ) const {
 }
 
 //Mutators
-void Roster::deleteStudent(string lastName) {
-	int location = findStudent(lastName);
+void Roster::deleteStudent (string lastName) {
+	int location = findStudent (lastName);
 	if (location != STUDENT_NOT_FOUND && location != DONT_EDIT) {
 		//Shift all the students over to the left in order to avoid empty gaps.
 		for (int i = location; i < numEnrolled; ++i) {
@@ -93,8 +93,9 @@ void Roster::deleteStudent(string lastName) {
 		}
 		--numEnrolled;
 	}
-}
 
+}
+//"Evan" "Josh" "Rod" "Andrew";
 void Roster::driver( ) {
 	//Make a random list of 8 students, add them to the roster.
 	int sizeOfList = 8;
