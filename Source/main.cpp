@@ -3,6 +3,7 @@
 //  main.cpp
 
 #include "Roster.hpp"
+#include "Student.hpp"
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
@@ -13,8 +14,10 @@ using std::string;
 
 int main ( ) {
 	srand (static_cast<unsigned int>(time (nullptr)));
+	
 	Roster* testRoster = new Roster ("CS212", "00212", "Gutlove", 4, 0);
 	testRoster->driver ( );
+	
 	delete testRoster;
 	return 0;
 }

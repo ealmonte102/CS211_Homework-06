@@ -25,19 +25,17 @@ public:
 	int getNumOfCredits( ) const;
 
 	//Mutator Functions
-	//Allows the user to create a new student if the capacity of the roster has not been reached.
-	void addStudent( );
-
 	//Allows a student to be passed to the roster and added if the capacity has not been reached.
 	void addStudent(Student* aStudent);
 
 	//Allows a list of students to be passed. Will add as many students as possible in sequential order, until the capacity has been reached.
 	void addStudent(Student* newStudents[], int numOfStudents);
 
-	//Removes the student located at a particular index in the roster. Replaces it with the default constructed student.
+	//Removes the student located at a particular index in the roster.
 	void deleteStudent(std::string lastName);
 
 	void driver ( );
+
 	//Overloaded Operators
 	friend std::ostream& operator<<(std::ostream& output, const Roster& currentRoster);
 
@@ -46,9 +44,6 @@ public:
 	const Student& operator[](int index) const;
 
 	//Helper Functions
-
-	void search (std::string lastName) const;
-
 	void sortUp( ) const;
 
 	void sortDown( ) const;

@@ -8,6 +8,8 @@ std::string upperConvert (std::string data);
 //Return's true if the user enters 'y' or 'Y' and false if 'N' or 'n'.
 bool getYesOrNo( );
 
+int getValidInt ( );
+
 //Sorts an array** of data in ascending order.
 template <class Type>
 void selectionSortUp(Type** a, int size) {

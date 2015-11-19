@@ -27,6 +27,14 @@ bool getYesOrNo ( ) {
 	}
 }
 
+int getValidInt( ) {
+	int numToReturn;
+	while(! (cin >> numToReturn)) {
+		cin.clear ( );
+		cin.ignore (100, '\n');
+	}
+	return numToReturn;
+}
 
 string upperConvert (string data) {
 	for (unsigned int i = 0; i < data.length ( ); ++i) {

@@ -32,7 +32,8 @@ Roster::Roster(std::string course, std::string courseNumber, std::string profess
 	instructor(professor), numOfCredits(credits), capacity(maxCapacity) {
 	if (numOfCredits <= 0 || numOfCredits > 4) {
 		cout << "Invalid number of credits given: " << numOfCredits << "\n";
-		exit(1);
+		cout << "Please try again: ";
+		numOfCredits = getValidInt ( );
 	}
 	studentList = new Student*[capacity];
 	for (int i = 0; i < capacity; ++i) {
@@ -44,14 +45,11 @@ Roster::Roster(const Roster& rhs) :
 	courseName(rhs.courseName), courseCode(rhs.courseCode), instructor(rhs.instructor),
 	numOfCredits(rhs.numOfCredits), capacity(rhs.capacity), studentList(new Student*[capacity]) {
 	for (numEnrolled = 0; numEnrolled < rhs.numEnrolled; ++numEnrolled) {
-		studentList[numEnrolled] = new Student(*rhs.studentList[numEnrolled]);
+		studentList[numEnrolled] = rhs.studentList[numEnrolled];
 	}
 }
 
 Roster::~Roster( ) {
-	for (int i = 0; i < numEnrolled; ++i) {
-		delete studentList[i];
-	}
 	delete[] studentList;
 }
 
@@ -86,62 +84,59 @@ int Roster::getNumOfCredits( ) const {
 }
 
 //Mutators
-void Roster::addStudent( ) {
-	Student* aStudent = new Student;
-	cin >> *aStudent;
-	if (numEnrolled == capacity) {
-		grow();
-	}
-	studentList[numEnrolled++] = aStudent;
-}
-
 void Roster::deleteStudent(string lastName) {
 	int location = findStudent(lastName);
 	if (location != STUDENT_NOT_FOUND && location != DONT_EDIT) {
-		delete studentList[location];
+		//Shift all the students over to the left in order to avoid empty gaps.
 		for (int i = location; i < numEnrolled; ++i) {
 			studentList[i] = studentList[i + 1];
 		}
-
-		studentList[--numEnrolled] = nullptr;
+		--numEnrolled;
 	}
 }
 
 void Roster::driver( ) {
+	//Make a random list of 8 students, add them to the roster.
 	int sizeOfList = 8;
 	Student** studentList = createRandomList(sizeOfList);
 
 	addStudent(studentList, sizeOfList);
 	cout << *this;
-	deleteStudent("ABreU");
+	//Try deleting a student with a last name of Abreu.
+	deleteStudent("AbrEU");
 
-	int sizeOfList2 = 2;
+	//Make a random list of 1 students, add them to the roster.
+	int sizeOfList2 = 1;
 	Student** studentList2 = createRandomList(sizeOfList2);
 	addStudent(studentList2, sizeOfList2);
+
 	cout << *this;
 
 }
 
 //Miscellaneous Functions
 int Roster::findStudent(string lastName) const {
+	//foundStudents: Holds the indices of where the students are located.
+	//numFound: Holds the a count referring to the number of students found.
 	int* foundStudents = new int[numEnrolled];
 	int numFound = findStudentHelper(foundStudents, lastName);
+
 	//If no students are found, return to the caller.
 	if (numFound == 0) {
 		cout << "No students with a last name of " << lastName << " were found.\n";
 		return STUDENT_NOT_FOUND;
 	}
+
 	int studentIndex = DONT_EDIT;
-	int userChoice;
+	int userChoice =  -1;
 	cout << "Please choose a student(0 to quit): ";
-	userChoice = getYesOrNo ( );
 	while (userChoice < 0 || userChoice > numFound) {
-		cout << "Please enter a valid number: ";
-		cin >> userChoice;
+		userChoice = getValidInt ( );
 	}
 	if (userChoice != 0) {
 		studentIndex = foundStudents[userChoice - 1];
 	}
+
 	delete[] foundStudents;
 	return studentIndex;
 }
@@ -156,13 +151,6 @@ int Roster::findStudentHelper(int* foundStudents, string lastName) const {
 		}
 	}
 	return numFound;
-}
-
-void Roster::search(string lastName) const {
-	int location = findStudent(lastName);
-	if (location != STUDENT_NOT_FOUND && location != DONT_EDIT) {
-		cout << "\n" << *studentList[location];
-	}
 }
 
 void Roster::sortDown( ) const {
@@ -216,19 +204,18 @@ std::istream& operator>>(std::istream& input, Roster& currentRoster) {
 	cout << "Change the course code(Y/N)? ";
 	if (getYesOrNo()) {
 		cout << "Please enter the course code: ";
-		cin >> currentRoster.courseCode;
+		input >> currentRoster.courseCode;
 	}
 	cout << "Change the course instructor?(Y/N)? ";
 	if (getYesOrNo()) {
-		cout << "Please enter the course's instructor: ";
-		cin >> currentRoster.instructor;
+		cout << "Please enter the course instructors last name: ";
+		input >> currentRoster.instructor;
 	}
 	cout << "Change the credits awarded upon completion(Y/N)? ";
 	if (getYesOrNo()) {
 		cout << "Please enter the credits awarded upon completion: ";
 		do {
-			cout << "Im here\n";
-			cin >> currentRoster.numOfCredits;
+			currentRoster.numOfCredits = getValidInt ( );
 		} while (currentRoster.numOfCredits < 0 || currentRoster.numOfCredits > 4);
 	}
 	return input;
@@ -244,9 +231,6 @@ const Student& Roster::operator[](int index) const {
 
 Roster& Roster::operator=(const Roster& rhs) {
 	if (this != &rhs) {
-		for (int i = 0; i < numEnrolled; ++i) {
-			delete studentList[i];
-		}
 		delete[] studentList;
 
 		courseName = rhs.courseName;
@@ -256,7 +240,7 @@ Roster& Roster::operator=(const Roster& rhs) {
 		capacity = rhs.capacity;
 		studentList = new Student*[capacity];
 		for (numEnrolled = 0; numEnrolled < rhs.numEnrolled; ++numEnrolled) {
-			studentList[numEnrolled] = new Student(*rhs.studentList[numEnrolled]);
+			studentList[numEnrolled] = rhs.studentList[numEnrolled];
 		}
 	}
 	return *this;
