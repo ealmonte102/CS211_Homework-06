@@ -31,10 +31,13 @@ public:
 	//Allows a list of students to be passed. Will add as many students as possible in sequential order, until the capacity has been reached.
 	void addStudent(Student* newStudents[], int numOfStudents);
 
+	
 	//Removes the student located at a particular index in the roster.
 	void deleteStudent(std::string lastName);
 
 	void driver ( );
+
+	void removeAll ( );
 
 	//Overloaded Operators
 	friend std::ostream& operator<<(std::ostream& output, const Roster& currentRoster);

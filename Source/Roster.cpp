@@ -13,8 +13,6 @@ using std::istream;
 using std::ostream;
 using std::string;
 
-Student** createRandomList(int size);
-
 //Constructors
 Roster::Roster( ) : courseName(""), courseCode(""), numEnrolled(0), instructor(""),
                     numOfCredits(0), capacity(15), studentList(new Student*[capacity]) {
@@ -69,6 +67,11 @@ void Roster::addStudent(Student* newStudents[], int numOfStudents) {
 	}
 }
 
+void Roster::removeAll( ) {
+	while(numEnrolled > 0) {
+		studentList[--numEnrolled] = nullptr;
+	}
+}
 
 //Accessors
 string Roster::getCourseName( ) const {
@@ -95,24 +98,10 @@ void Roster::deleteStudent (string lastName) {
 	}
 
 }
-//"Evan" "Josh" "Rod" "Andrew";
+
 void Roster::driver( ) {
-	//Make a random list of 8 students, add them to the roster.
-	int sizeOfList = 8;
-	Student** studentList = createRandomList(sizeOfList);
-
-	addStudent(studentList, sizeOfList);
-	cout << *this;
-	//Try deleting a student with a last name of Abreu.
-	deleteStudent("AbrEU");
-
-	//Make a random list of 1 students, add them to the roster.
-	int sizeOfList2 = 1;
-	Student** studentList2 = createRandomList(sizeOfList2);
-	addStudent(studentList2, sizeOfList2);
-
-	cout << *this;
-
+	deleteStudent("Abreu");
+	removeAll ( );
 }
 
 //Miscellaneous Functions
@@ -245,32 +234,4 @@ Roster& Roster::operator=(const Roster& rhs) {
 		}
 	}
 	return *this;
-}
-
-//Generates a random list of students as large as the specified parameter.
-Student** createRandomList(int size) {
-	Student** studentList = new Student*[size];
-	int numOfLastNames = 6;
-	string lastNames[] = {"Almonte" , "Petrou", "Capaldo", "Abreu", "McSorley", "Toribio"};
-
-	int numOfFirstNames = 6;
-	string firstNames[] = {"Evan", "Andrew", "Joshua", "Max", "Andy", "Alex"};
-
-	int numOfGpas = 6;
-	double gpas[] = {3.5, 2.98, 4.0, 2.6, 3.75, 3.9};
-
-	int numOfBirthdays = 5;
-	Date birthdays[] = {Date(6, 16, 1995), Date(3, 23, 1992), Date(8, 23, 1998), Date(5, 15, 1990), Date(3, 5, 1995)};
-
-	for (int i = 0; i < size; ++i) {
-		string randLast = lastNames[rand() % numOfLastNames];
-		string randFirst = firstNames[rand() % numOfFirstNames];
-		double randGpa = gpas[rand() % numOfGpas];
-		int randCreds = rand() % 117;
-		Date randDob = birthdays[rand() % numOfBirthdays];
-
-
-		studentList[i] = new Student(randLast, randFirst, randGpa, randCreds, randDob, Date());
-	}
-	return studentList;
 }
