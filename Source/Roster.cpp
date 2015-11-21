@@ -1,7 +1,7 @@
 // Roster.cpp
 // Created by Evan Almonte on 10/18/2015.
 //
-	#include "Roster.hpp"
+#include "Roster.hpp"
 #include "Student.hpp"
 #include "Utilities.hpp"
 #include <cstdlib>
@@ -15,24 +15,21 @@ using std::string;
 
 //Constructors
 Roster::Roster( ) : courseName(""), courseCode(""), numEnrolled(0), instructor(""),
-                    numOfCredits(0), capacity(15), studentList(new Student*[capacity]) {
+                    numOfCredits(0), capacity(5), studentList(new Student*[capacity]) {
 	for (int i = 0; i < capacity; ++i) {
 		studentList[i] = nullptr;
 	}
 }
 
-string Roster::getCourseCode( ) const {
-	return courseCode;
-}
-
-Roster::Roster(std::string course, std::string courseNumber, std::string professor, int credits, int maxCapacity) :
+Roster::Roster(std::string course, std::string courseNumber, std::string instructor, int credits, int maxCapacity) :
 	courseName(course), courseCode(courseNumber), numEnrolled(0),
-	instructor(professor), numOfCredits(credits), capacity(maxCapacity) {
+	instructor(instructor), numOfCredits(credits), capacity(maxCapacity) {
 	if (numOfCredits <= 0 || numOfCredits > 4) {
 		cout << "Invalid number of credits given: " << numOfCredits << "\n";
 		cout << "Please try again: ";
-		numOfCredits = getValidInt ( );
+		numOfCredits = getValidInt();
 	}
+	if (capacity < 0) { capacity = 0; }
 	studentList = new Student*[capacity];
 	for (int i = 0; i < capacity; ++i) {
 		studentList[i] = nullptr;
@@ -51,6 +48,7 @@ Roster::~Roster( ) {
 	delete[] studentList;
 }
 
+//Adds a student to the roster. Capacity increased if reached by size.
 void Roster::addStudent(Student* aStudent) {
 	if (numEnrolled == capacity) {
 		grow();
@@ -58,6 +56,8 @@ void Roster::addStudent(Student* aStudent) {
 	studentList[numEnrolled++] = aStudent;
 }
 
+//Adds an array of students to the roster. If the capacity is reached while adding students
+//it will be increased.
 void Roster::addStudent(Student* newStudents[], int numOfStudents) {
 	for (int i = 0; i < numOfStudents; ++i , ++numEnrolled) {
 		if (numEnrolled == capacity) {
@@ -67,13 +67,17 @@ void Roster::addStudent(Student* newStudents[], int numOfStudents) {
 	}
 }
 
+//Removes all students from the roster. Capacity is left unchanged.
 void Roster::removeAll( ) {
-	while(numEnrolled > 0) {
+	while (numEnrolled > 0) {
 		studentList[--numEnrolled] = nullptr;
 	}
 }
 
-//Accessors
+string Roster::getCourseCode ( ) const {
+	return courseCode;
+}
+
 string Roster::getCourseName( ) const {
 	return courseName;
 }
@@ -86,25 +90,49 @@ int Roster::getNumOfCredits( ) const {
 	return numOfCredits;
 }
 
-//Mutators
-void Roster::deleteStudent (string lastName) {
-	int location = findStudent (lastName);
-	if (location != STUDENT_NOT_FOUND && location != DONT_EDIT) {
+//Removes student from the current roster.
+void Roster::removeStudent(string lastName) {
+	int location = findStudent(lastName);
+	if (location != STUDENT_NOT_FOUND && location != DONT_EDIT_STUDENT) {
 		//Shift all the students over to the left in order to avoid empty gaps.
 		for (int i = location; i < numEnrolled; ++i) {
 			studentList[i] = studentList[i + 1];
 		}
 		--numEnrolled;
 	}
-
 }
 
+//Test various components of the Roster class ([], <<, >>, removeStudent(), sort(), removeAll()).
 void Roster::driver( ) {
-	deleteStudent("Abreu");
-	removeAll ( );
+	cout << "=====Testing >> operator=====\n";
+	cin >> *this;
+
+	cout << "=====Testing << operator=====\n";
+	cout << *this << "\n";
+
+	if (studentList[0] != nullptr) {
+		cout << "=====Testing [] operator=====\n";
+		cout << "Roster[0]:\n" << (*this)[0] << "\n";
+	}
+
+	cout << "=====Testing removeStudent=====\n";
+	cout << "Please enter a last name: ";
+	string inputLastName;
+	getline(cin, inputLastName);
+	removeStudent(inputLastName);
+	cout << "After removeStudent(" << inputLastName << "):\n" << *this << "\n";
+
+	cout << "=====Testing sort()=====\n";
+	sortUp();
+	cout << *this << "\n";
+
+	cout << "=====Testing removeAll()=====\n";
+	removeAll();
+	cout << *this << "\n";
 }
 
-//Miscellaneous Functions
+//If found, returns the index of a student in studentList otherwise returns STUDENT_NOT_FOUND
+//if none are found, or DONT_EDIT_STUDENT if user wishes to quit without choosing a student.
 int Roster::findStudent(string lastName) const {
 	//foundStudents: Holds the indices of where the students are located.
 	//numFound: Holds the a count referring to the number of students found.
@@ -117,11 +145,11 @@ int Roster::findStudent(string lastName) const {
 		return STUDENT_NOT_FOUND;
 	}
 
-	int studentIndex = DONT_EDIT;
-	int userChoice =  -1;
+	int studentIndex = DONT_EDIT_STUDENT;
+	int userChoice = -1;
 	cout << "Please choose a student(0 to quit): ";
 	while (userChoice < 0 || userChoice > numFound) {
-		userChoice = getValidInt ( );
+		userChoice = getValidInt();
 	}
 	if (userChoice != 0) {
 		studentIndex = foundStudents[userChoice - 1];
@@ -131,7 +159,10 @@ int Roster::findStudent(string lastName) const {
 	return studentIndex;
 }
 
+//Returns the number of students found in the Roster with the specified last name.
+//Also populates foundStudents with the each found students index in studentList.
 int Roster::findStudentHelper(int* foundStudents, string lastName) const {
+	//numFound refers to the number of students found with the same last name.
 	int numFound = 0;
 	for (int i = 0; i < numEnrolled; ++i) {
 		if (upperConvert(studentList[i]->getLastName()) == upperConvert(lastName)) {
@@ -143,14 +174,17 @@ int Roster::findStudentHelper(int* foundStudents, string lastName) const {
 	return numFound;
 }
 
+//Sorts the roster in reverse alphebetical order.
 void Roster::sortDown( ) const {
 	selectionSortDown(studentList, numEnrolled);
 }
 
+//Sorts the roster in alphabetical order.
 void Roster::sortUp( ) const {
 	selectionSortUp(studentList, numEnrolled);
 }
 
+//Used to increase the capacity of the roster if it's size surpasses the current capacity.
 void Roster::grow( ) {
 	int newCapacity = 2 * capacity + 1;
 	Student** tempList = new Student*[newCapacity];
@@ -180,8 +214,7 @@ ostream& operator<<(ostream& output, const Roster& currentRoster) {
 		output << currentRoster.studentList[i]->getLastName() + ", " + currentRoster.studentList[i]->getFirstName();
 		output << ": " << currentRoster.studentList[i]->getId() << "\n";
 	}
-	output << "------------------------------ \n";
-
+	output << "------------------------------";
 	return output;
 }
 
@@ -189,28 +222,29 @@ std::istream& operator>>(std::istream& input, Roster& currentRoster) {
 	cout << "Change the course name(Y/N)? ";
 	if (getYesOrNo()) {
 		cout << "Please enter the course name: ";
-		cin >> currentRoster.courseName;
+		getline(input, currentRoster.courseName);
 	}
 	cout << "Change the course code(Y/N)? ";
 	if (getYesOrNo()) {
 		cout << "Please enter the course code: ";
-		input >> currentRoster.courseCode;
+		getline(input, currentRoster.courseCode);
 	}
 	cout << "Change the course instructor?(Y/N)? ";
 	if (getYesOrNo()) {
-		cout << "Please enter the course instructors last name: ";
-		input >> currentRoster.instructor;
+		cout << "Please enter the course instructors name: ";
+		getline(input, currentRoster.instructor);
 	}
 	cout << "Change the credits awarded upon completion(Y/N)? ";
 	if (getYesOrNo()) {
 		cout << "Please enter the credits awarded upon completion: ";
 		do {
-			currentRoster.numOfCredits = getValidInt ( );
-		} while (currentRoster.numOfCredits < 0 || currentRoster.numOfCredits > 4);
+			currentRoster.numOfCredits = getValidInt();
+		} while (currentRoster.numOfCredits < 1 || currentRoster.numOfCredits > 4);
 	}
 	return input;
 }
 
+//Returns an immutable Student object. Bounds are checked.
 const Student& Roster::operator[](int index) const {
 	if (index < 0 || index >= numEnrolled) {
 		cout << "Array index out of bounds: " << index << "\n";

@@ -36,9 +36,7 @@ void Student::generateNextID( ) {
 
 //Constructors
 Student::Student( ) : lastName(""), firstName(""), idAsNum(-1),
-                      id(""), gpa(-1.0), credits(-1), standing("") {
-	
-}
+                      id(""), gpa(-1.0), credits(-1), standing("") { }
 
 Student::Student(std::string last, std::string first, double gpa, int credits, Date dob, Date matric)
 	: lastName(last), firstName(first), idAsNum(unusedID.peek()), id(idToInt(idAsNum)), gpa(gpa),
@@ -156,6 +154,7 @@ bool Student::operator==(const Student& otherStudent) const {
 		firstName == otherStudent.firstName &&
 		id == otherStudent.id);
 }
+
 bool Student::operator!=(const Student& otherStudent) const {
 	return !operator==(otherStudent);
 }
@@ -180,6 +179,7 @@ bool Student::operator<(const Student& otherStudent) const {
 	}
 	return id < otherStudent.id;
 }
+
 //"Zokus"
 //"Petrou"
 
@@ -211,7 +211,7 @@ istream& operator>>(istream& input, Student& currentStudent) {
 	if (currentStudent.id == "") {
 		currentStudent.idAsNum = Student::unusedID.peek();
 		currentStudent.id = idToInt(currentStudent.idAsNum);
-		Student::generateNextID ( );
+		Student::generateNextID();
 	}
 	cout << "Change credits earned(Y/N)? ";
 	if (getYesOrNo()) {

@@ -3,12 +3,12 @@
 #include <string>
 
 //Converts a string to it's lowercase equivalent.
-std::string upperConvert (std::string data);
+std::string upperConvert(std::string data);
 
 //Return's true if the user enters 'y' or 'Y' and false if 'N' or 'n'.
 bool getYesOrNo( );
 
-int getValidInt ( );
+int getValidInt( );
 
 //Sorts an array** of data in ascending order.
 template <class Type>
@@ -22,7 +22,7 @@ void selectionSortUp(Type** a, int size) {
 			}
 		}
 		if (i != minIndex) {
-			swap(*a[i], *a[minIndex]);
+			swap(a[i], a[minIndex]);
 		}
 	}
 }
@@ -51,3 +51,4 @@ void swap(Type& a, Type& b) {
 	b = temp;
 }
 #endif
+
