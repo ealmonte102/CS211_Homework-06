@@ -1,6 +1,6 @@
-//  Created by X Code Testing on 11/6/15.
-//  Copyright (c) 2015 Evan Almonte. All rights reserved.
 //  main.cpp
+//  Copyright (c) 2015 Evan Almonte. All rights reserved.
+//  
 
 #include "Date.h"
 #include "Student.hpp"
